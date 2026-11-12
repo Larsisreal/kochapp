@@ -2,11 +2,14 @@ import 'package:material_ui/material_ui.dart';
 
 import '../logik/menge.dart';
 import '../models/rezept.dart';
+import '../models/schritt.dart';
 import '../models/zutat.dart';
+import 'schritt_dialog.dart';
 import 'zutat_dialog.dart';
 
 class RecipeEditPage extends StatefulWidget {
-  const RecipeEditPage({super.key});
+  final Rezept? rezept;
+  const RecipeEditPage({super.key, this.rezept});
 
   @override
   State<RecipeEditPage> createState() => _RecipeEditPageState();
@@ -18,6 +21,7 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
     text: '4',
   );
   final List<Zutat> zutaten = [];
+  final List<Schritt> schritte = [];
 
   Future<void> _addZutat() async {
     final zutat = await showDialog<Zutat>(
@@ -27,6 +31,28 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
 
     if (zutat != null && mounted) {
       setState(() => zutaten.add(zutat));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.rezept != null) {
+      nameController.text = widget.rezept!.name;
+      personsController.text = widget.rezept!.basisPersonen.toString();
+      zutaten.addAll(widget.rezept!.zutaten);
+      schritte.addAll(widget.rezept!.schritte);
+    }
+  }
+
+  Future<void> _addSchritt() async {
+    final schritt = await showDialog<Schritt>(
+      context: context,
+      builder: (_) => const SchrittDialog(),
+    );
+
+    if (schritt != null && mounted) {
+      setState(() => schritte.add(schritt));
     }
   }
 
@@ -42,11 +68,11 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
     }
 
     final newRecipe = Rezept(
-      id: DateTime.now().toString(),
+      id: widget.rezept?.id ?? DateTime.now().toString(),
       name: name,
       basisPersonen: persons,
       zutaten: List<Zutat>.of(zutaten),
-      schritte: [],
+      schritte: List<Schritt>.of(schritte),
     );
 
     Navigator.pop(context, newRecipe);
@@ -62,7 +88,11 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Neues Rezept hinzufügen')),
+      appBar: AppBar(
+        title: Text(
+          widget.rezept == null ? 'Neues Rezept' : 'Rezept bearbeiten',
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
@@ -97,6 +127,30 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
               onPressed: _addZutat,
               icon: const Icon(Icons.add),
               label: const Text('Zutat hinzufügen'),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Zubereitung',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            ...schritte.asMap().entries.map((entry) {
+              final schritt = entry.value;
+              return ListTile(
+                leading: CircleAvatar(child: Text('${entry.key + 1}')),
+                title: Text(schritt.name),
+                subtitle: schritt.beschreibung.isEmpty
+                    ? null
+                    : Text(schritt.beschreibung),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () => setState(() => schritte.remove(schritt)),
+                ),
+              );
+            }),
+            OutlinedButton.icon(
+              onPressed: _addSchritt,
+              icon: const Icon(Icons.add),
+              label: const Text('Schritt hinzufügen'),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
