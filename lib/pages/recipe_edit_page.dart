@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import '../models/rezept.dart';
 
 class RecipeEditPage extends StatefulWidget {
   const RecipeEditPage({super.key});
@@ -10,6 +11,28 @@ class RecipeEditPage extends StatefulWidget {
 class _RecipeEditPageState extends State<RecipeEditPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController personsController = TextEditingController(text: '4');
+
+  void saveRecipe(){
+    final name = nameController.text.trim();
+    final persons = int.tryParse(personsController.text.trim());
+
+    if(name.isEmpty || persons == null || persons <= 0){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bitte gültige Eingaben machen.')),
+      );
+      return;
+    }
+
+    var newRecipe = Rezept(
+      id: DateTime.now().toString(),
+      name: name,
+      basisPersonen: persons,
+      zutaten: [],
+      schritte:[],
+    );
+
+    Navigator.pop(context, newRecipe);
+  }
 
   @override
   void dispose() {
@@ -38,7 +61,7 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: saveRecipe,
               child: const Text('Rezept speichern'),
             ),
           ],

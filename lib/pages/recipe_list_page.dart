@@ -13,16 +13,22 @@ class RecipeListPage extends StatefulWidget {
 }
 
 class _RecipeListPageState extends State<RecipeListPage> {
-  void _newRecipe() {
-    Navigator.of(context).push(
+  final List<Rezept> rezepte = [beispielRezept];
+  
+  Future<void> _newRecipe() async {
+    final newRecipe = await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const RecipeEditPage()),
     );
+    if (newRecipe != null) {
+      setState(() {
+        rezepte.add(newRecipe);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<Rezept> rezepte = [beispielRezept];
-
+    
     return Scaffold(
       appBar: AppBar(title: const Text('Meine Rezepte')),
       body: ListView.builder(
