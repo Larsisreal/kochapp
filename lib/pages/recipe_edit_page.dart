@@ -48,7 +48,7 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
   Future<void> _addSchritt() async {
     final schritt = await showDialog<Schritt>(
       context: context,
-      builder: (_) => const SchrittDialog(),
+      builder: (_) => SchrittDialog(zutaten: zutaten),
     );
 
     if (schritt != null && mounted) {

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
 
+import '/logik/platzhalter.dart';
+
 import '../daten/cook_state_save.dart';
 import '../models/rezept.dart';
 
@@ -99,9 +101,16 @@ class _CookingPageState extends State<CookingPage> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            Text(
-                              schritt.beschreibung,
-                              style: const TextStyle(fontSize: 18),
+                            Text.rich(
+                              TextSpan(
+                                style: const TextStyle(fontSize: 18),
+                                children: placeholderSpans(
+                                  schritt.beschreibung,
+                                  widget.rezept.zutaten,
+                                  widget.rezept.basisPersonen,
+                                  widget.kochvorgang.personen,
+                                ),
+                              ),
                             ),
                           ],
                         ),

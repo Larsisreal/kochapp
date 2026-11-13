@@ -1,9 +1,12 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../models/schritt.dart';
+import '../models/zutat.dart';
 
 class SchrittDialog extends StatefulWidget {
-  const SchrittDialog({super.key});
+  final List<Zutat> zutaten;
+
+  const SchrittDialog({super.key, required this.zutaten});
 
   @override
   State<SchrittDialog> createState() => _SchrittDialogState();
@@ -13,6 +16,19 @@ class _SchrittDialogState extends State<SchrittDialog> {
   final TextEditingController stepNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  void _insertPlaceholder(String name) {
+    final text = descriptionController.text;
+    final selection = descriptionController.selection;
+    final start = selection.isValid ? selection.start : text.length;
+    final end = selection.isValid ? selection.end : text.length;
+    final placeholder = '{$name}';
+
+    descriptionController.value = TextEditingValue(
+      text: text.replaceRange(start, end, placeholder),
+      selection: TextSelection.collapsed(offset: start + placeholder.length),
+    );
+  }
 
   @override
   void dispose() {
@@ -42,6 +58,25 @@ class _SchrittDialogState extends State<SchrittDialog> {
                 controller: descriptionController,
                 decoration: const InputDecoration(labelText: 'Beschreibung'),
                 maxLines: 3,
+              ),
+              PopupMenuButton<Zutat>(
+                enabled: widget.zutaten.isNotEmpty,
+                onSelected: (zutat) => _insertPlaceholder(zutat.name),
+                itemBuilder: (context) => [
+                  for (final zutat in widget.zutaten)
+                    PopupMenuItem(value: zutat, child: Text(zutat.name)),
+                ],
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add),
+                      SizedBox(width: 8),
+                      Text('Zutat einfügen'),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

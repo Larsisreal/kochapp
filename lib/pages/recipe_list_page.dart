@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import '/main.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/rezept.dart';
 import 'recipe_detail_page.dart';
 import 'recipe_edit_page.dart';
