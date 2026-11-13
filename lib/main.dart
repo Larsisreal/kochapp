@@ -1,7 +1,17 @@
+import 'package:kochapp/pages/login_page.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:kochapp/pages/recipe_list_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+Future<void> main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://zktjbiqnguyevhnphwth.supabase.co',
+    publishableKey: 'sb_publishable_ueLsdkSy2ZFljWDzMSiYvA_Uo8xtI-s',
+  );
+
   runApp(const MyApp());
 }
 
@@ -18,7 +28,12 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
 ),
-      home: const RecipeListPage(),
+      home: supabase.auth.currentSession == null
+            ? const LoginPage()
+            : const RecipeListPage(),
     );
   }
 }
+
+
+final supabase = Supabase.instance.client;

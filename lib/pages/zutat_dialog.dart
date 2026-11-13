@@ -16,11 +16,12 @@ class _ZutatDialogState extends State<ZutatDialog> {
   final TextEditingController unitController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  String unit = '';
+
   @override
   void dispose() {
     ingredientNameController.dispose();
     amountController.dispose();
-    unitController.dispose();
     super.dispose();
   }
 
@@ -57,9 +58,21 @@ class _ZutatDialogState extends State<ZutatDialog> {
                       : null;
                 },
               ),
-              TextFormField(
-                controller: unitController,
-                decoration: const InputDecoration(labelText: 'Einheit'),
+              DropdownMenu<String>(
+                label: const Text('Einheit'),
+                initialSelection: unit,
+                onSelected: (value) => setState(() => unit = value ?? ''),
+                dropdownMenuEntries: const [
+                  DropdownMenuEntry(value: '', label: 'keine'),
+                  DropdownMenuEntry(value: 'g', label: 'g'),
+                  DropdownMenuEntry(value: 'kg', label: 'kg'),
+                  DropdownMenuEntry(value: 'ml', label: 'ml'),
+                  DropdownMenuEntry(value: 'l', label: 'l'),
+                  DropdownMenuEntry(value: 'Stück', label: 'Stück'),
+                  DropdownMenuEntry(value: 'EL', label: 'EL'),
+                  DropdownMenuEntry(value: 'TL', label: 'TL'),
+                  DropdownMenuEntry(value: 'Prise', label: 'Prise'),
+                ],
               ),
             ],
           ),
@@ -83,9 +96,7 @@ class _ZutatDialogState extends State<ZutatDialog> {
                 menge: amountText.isEmpty
                     ? null
                     : num.parse(amountText.replaceAll(',', '.')),
-                einheit: unitController.text.trim().isEmpty
-                    ? null
-                    : unitController.text.trim(),
+                einheit: unit.isEmpty ? null : unit,
               ),
             );
           },

@@ -10,4 +10,12 @@ class Schritt {
     required this.beschreibung,
   });
 
+  factory Schritt.fromMap(Map<String, dynamic> map) {
+    return Schritt(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      beschreibung: map['beschreibung'] as String,
+    );
+  }
+
 }
